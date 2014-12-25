@@ -23,24 +23,19 @@ import org.jruby.RubyInstanceConfig.CompileMode;
 import org.jruby.embed.ScriptingContainer;
 import org.jruby.exceptions.RaiseException;
 import org.jruby.javasupport.JavaEmbedUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class JRubyAsciidoctor implements Asciidoctor {
 
-    private static final Logger log = LoggerFactory.getLogger(JRubyAsciidoctor.class.getName());
+    private static final Logger log = Logger.getLogger(JRubyAsciidoctor.class.getName());
 
     private static final String GEM_PATH = "GEM_PATH";
 
@@ -281,13 +276,11 @@ public class JRubyAsciidoctor implements Asciidoctor {
 
         this.rubyGemsPreloader.preloadRequiredLibraries(options);
 
-        if (log.isDebugEnabled()) {
-            log.debug(AsciidoctorUtils.toAsciidoctorCommand(options, "-"));
+            log.finer(AsciidoctorUtils.toAsciidoctorCommand(options, "-"));
 
             if (AsciidoctorUtils.isOptionWithAttribute(options, Attributes.SOURCE_HIGHLIGHTER, "pygments")) {
-                log.debug("In order to use Pygments with Asciidoctor, you need to install Pygments (and Python, if you don’t have it yet). Read http://asciidoctor.org/news/#syntax-highlighting-with-pygments.");
+                log.finer("In order to use Pygments with Asciidoctor, you need to install Pygments (and Python, if you don’t have it yet). Read http://asciidoctor.org/news/#syntax-highlighting-with-pygments.");
             }
-        }
 
         String currentDirectory = rubyRuntime.getCurrentDirectory();
 
@@ -301,7 +294,7 @@ public class JRubyAsciidoctor implements Asciidoctor {
             Object object = this.asciidoctorModule.convert(content, rubyHash);
             return returnExpectedValue(object);
         } catch(RaiseException e) {
-            logger.severe(e.getException().getClass().getCanonicalName());
+            log.log(Level.SEVERE, e.getException().getClass().getCanonicalName());
             throw new AsciidoctorCoreException(e);
         } finally {
             // we restore current directory to its original value.
@@ -317,9 +310,7 @@ public class JRubyAsciidoctor implements Asciidoctor {
 
         this.rubyGemsPreloader.preloadRequiredLibraries(options);
 
-        if (log.isDebugEnabled()) {
-            log.debug(AsciidoctorUtils.toAsciidoctorCommand(options, filename.getAbsolutePath()));
-        }
+            log.finer(AsciidoctorUtils.toAsciidoctorCommand(options, filename.getAbsolutePath()));
 
         String currentDirectory = rubyRuntime.getCurrentDirectory();
 
@@ -333,7 +324,7 @@ public class JRubyAsciidoctor implements Asciidoctor {
             Object object = this.asciidoctorModule.convertFile(filename.getAbsolutePath(), rubyHash);
             return returnExpectedValue(object);
         } catch(RaiseException e) {
-            logger.severe(e.getMessage());
+            log.log(Level.SEVERE, e.getMessage());
 
             throw new AsciidoctorCoreException(e);
         } finally {
@@ -461,6 +452,21 @@ public class JRubyAsciidoctor implements Asciidoctor {
     @Deprecated
     public String[] renderFiles(Collection<File> asciidoctorFiles, OptionsBuilder options) {
         return this.renderFiles(asciidoctorFiles, options.asMap());
+    }
+
+    @Override
+    public void requireLibrary(String... requiredLibraries) {
+        requireLibraries(Arrays.asList(requiredLibraries));
+    }
+
+    @Override
+    public void requireLibraries(Collection<String> requiredLibraries) {
+        if (requiredLibraries != null) {
+            RubyExtensionRegistry registry = rubyExtensionRegistry();
+            for (String requiredLibrary : requiredLibraries) {
+                registry.requireLibrary(requiredLibrary);
+            }
+        }
     }
 
     @Override
