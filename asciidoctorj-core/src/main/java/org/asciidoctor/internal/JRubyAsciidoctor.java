@@ -276,11 +276,11 @@ public class JRubyAsciidoctor implements Asciidoctor {
 
         this.rubyGemsPreloader.preloadRequiredLibraries(options);
 
-            log.finer(AsciidoctorUtils.toAsciidoctorCommand(options, "-"));
+        log.finer(AsciidoctorUtils.toAsciidoctorCommand(options, "-"));
 
-            if (AsciidoctorUtils.isOptionWithAttribute(options, Attributes.SOURCE_HIGHLIGHTER, "pygments")) {
-                log.finer("In order to use Pygments with Asciidoctor, you need to install Pygments (and Python, if you don’t have it yet). Read http://asciidoctor.org/news/#syntax-highlighting-with-pygments.");
-            }
+        if (AsciidoctorUtils.isOptionWithAttribute(options, Attributes.SOURCE_HIGHLIGHTER, "pygments")) {
+            log.finer("In order to use Pygments with Asciidoctor, you need to install Pygments (and Python, if you don’t have it yet). Read http://asciidoctor.org/news/#syntax-highlighting-with-pygments.");
+        }
 
         String currentDirectory = rubyRuntime.getCurrentDirectory();
 
@@ -293,7 +293,7 @@ public class JRubyAsciidoctor implements Asciidoctor {
         try {
             Object object = this.asciidoctorModule.convert(content, rubyHash);
             return returnExpectedValue(object);
-        } catch(RaiseException e) {
+        } catch (RaiseException e) {
             log.log(Level.SEVERE, e.getException().getClass().getCanonicalName());
             throw new AsciidoctorCoreException(e);
         } finally {
@@ -310,7 +310,7 @@ public class JRubyAsciidoctor implements Asciidoctor {
 
         this.rubyGemsPreloader.preloadRequiredLibraries(options);
 
-            log.finer(AsciidoctorUtils.toAsciidoctorCommand(options, filename.getAbsolutePath()));
+        log.finer(AsciidoctorUtils.toAsciidoctorCommand(options, filename.getAbsolutePath()));
 
         String currentDirectory = rubyRuntime.getCurrentDirectory();
 
@@ -323,7 +323,7 @@ public class JRubyAsciidoctor implements Asciidoctor {
         try {
             Object object = this.asciidoctorModule.convertFile(filename.getAbsolutePath(), rubyHash);
             return returnExpectedValue(object);
-        } catch(RaiseException e) {
+        } catch (RaiseException e) {
             log.log(Level.SEVERE, e.getMessage());
 
             throw new AsciidoctorCoreException(e);
@@ -337,7 +337,7 @@ public class JRubyAsciidoctor implements Asciidoctor {
      * This method has been added to deal with the fact that asciidoctor 0.1.2 can return an Asciidoctor::Document or a
      * String depending if content is write to disk or not. This may change in the future
      * (https://github.com/asciidoctor/asciidoctor/issues/286)
-     * 
+     *
      * @param object
      * @return
      */
@@ -455,16 +455,15 @@ public class JRubyAsciidoctor implements Asciidoctor {
     }
 
     @Override
-    public void requireLibrary(String... requiredLibraries) {
-        requireLibraries(Arrays.asList(requiredLibraries));
+    public void requireLibrary(String... library) {
+        requireLibraries(Arrays.asList(library));
     }
 
     @Override
-    public void requireLibraries(Collection<String> requiredLibraries) {
-        if (requiredLibraries != null) {
-            RubyExtensionRegistry registry = rubyExtensionRegistry();
-            for (String requiredLibrary : requiredLibraries) {
-                registry.requireLibrary(requiredLibrary);
+    public void requireLibraries(Collection<String> libraries) {
+        if (libraries != null) {
+            for (String library : libraries) {
+                RubyUtils.requireLibrary(rubyRuntime, library);
             }
         }
     }
