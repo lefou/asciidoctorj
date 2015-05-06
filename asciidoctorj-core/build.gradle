@@ -34,6 +34,7 @@ jrubyPrepareGems << {
 
 jar {
   manifest {
+    symbolicName = 'org.asciidoctor'
     instruction 'Bundle-Activator',
       'org.asciidoctor.internal.AsciidoctorActivator'
     instruction 'Export-Package',
