@@ -1,3 +1,5 @@
+apply plugin: 'osgi'
+
 dependencies {
   compile "org.jruby:jruby-complete:$jrubyVersion"
   compile "com.beust:jcommander:$jcommanderVersion"
@@ -26,5 +28,18 @@ jrubyPrepareGems << {
   copy { // bundles the gems inside this artifact
     from gemFiles
     into sourceSets.main.output.resourcesDir
+  }
+}
+
+jar {
+  manifest {
+    instruction 'Export-Package',
+      'org.asciidoctor',
+      'org.asciidoctor.ast',
+      'org.asciidoctor.converter',
+      'org.asciidoctor.extension'
+    instruction 'Import-Package',
+      'com.beust.jcommander;resolution:=optional',
+      '*'
   }
 }
