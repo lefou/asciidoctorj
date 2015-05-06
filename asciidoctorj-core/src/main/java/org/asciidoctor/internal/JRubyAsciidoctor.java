@@ -1,5 +1,21 @@
 package org.asciidoctor.internal;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.io.Reader;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.asciidoctor.Asciidoctor;
 import org.asciidoctor.Attributes;
 import org.asciidoctor.DirectoryWalker;
@@ -25,11 +41,6 @@ import org.jruby.RubyInstanceConfig.CompileMode;
 import org.jruby.embed.ScriptingContainer;
 import org.jruby.exceptions.RaiseException;
 import org.jruby.javasupport.JavaEmbedUtils;
-
-import java.io.*;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class JRubyAsciidoctor implements Asciidoctor {
 
@@ -64,7 +75,7 @@ public class JRubyAsciidoctor implements Asciidoctor {
     protected RubyGemsPreloader rubyGemsPreloader;
     protected Ruby rubyRuntime;
 
-    private JRubyAsciidoctor(AsciidoctorModule asciidoctorModule, Ruby rubyRuntime) {
+    JRubyAsciidoctor(final AsciidoctorModule asciidoctorModule, final Ruby rubyRuntime) {
         super();
         this.asciidoctorModule = asciidoctorModule;
         this.rubyRuntime = rubyRuntime;
@@ -176,8 +187,8 @@ public class JRubyAsciidoctor implements Asciidoctor {
         return jRubyAsciidoctor;
     }
 
-    private static void injectEnvironmentVariables(RubyInstanceConfig config, Map<String, Object> environmentVars) {
-        EnvironmentInjector environmentInjector = new EnvironmentInjector(config);
+    static void injectEnvironmentVariables(final RubyInstanceConfig config, final Map<String, Object> environmentVars) {
+        final EnvironmentInjector environmentInjector = new EnvironmentInjector(config);
         environmentInjector.inject(environmentVars);
     }
 

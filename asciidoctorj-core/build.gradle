@@ -3,6 +3,7 @@ apply plugin: 'osgi'
 dependencies {
   compile "org.jruby:jruby-complete:$jrubyVersion"
   compile "com.beust:jcommander:$jcommanderVersion"
+  compile "org.osgi:org.osgi.core:4.2.0"
   gems "rubygems:asciidoctor:$asciidoctorGemVersion"
   gems "rubygems:coderay:$coderayGemVersion"
   gems "rubygems:erubis:$erubisGemVersion"
@@ -33,6 +34,8 @@ jrubyPrepareGems << {
 
 jar {
   manifest {
+    instruction 'Bundle-Activator',
+      'org.asciidoctor.internal.AsciidoctorActivator'
     instruction 'Export-Package',
       'org.asciidoctor',
       'org.asciidoctor.ast',
@@ -41,5 +44,7 @@ jar {
     instruction 'Import-Package',
       'com.beust.jcommander;resolution:=optional',
       '*'
+    instruction 'Asciidoctor-AsciidoctorGemVersion',
+      "${asciidoctorGemVersion}"
   }
 }
